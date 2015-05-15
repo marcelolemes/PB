@@ -11,11 +11,11 @@ using System.Windows.Forms;
 
 namespace PB
 {
-    public partial class Form1 : Form
+    public partial class PB : Form
     {
         List<String> imagens = new List<string>();
-
-        public Form1()
+        static Bitmap newBitmap;
+        public PB()
         {
             InitializeComponent();
         }
@@ -27,17 +27,42 @@ namespace PB
 
         private void listBox1_DragEnter(object sender, DragEventArgs e)
         {
-            Bitmap image;
-            imagens.Clear();
-            listBox1.Items.Clear();
-            imagens.AddRange((String[])e.Data.GetData(DataFormats.FileDrop));
-           foreach(String s in imagens){
-               image = MakeGrayscale(new Bitmap(s));
-               image.Save(s.Substring(0,s.Length-4) + " PB.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
-               image.Dispose();
-               listBox1.Items.Add(s);
-           }
-           imagens.Clear();
+            
+            try
+            {
+                
+                listBox1.Items.Clear();
+                listBox1.Items.Add("Por favor, aguarde!!!");
+                
+                imagens.AddRange((String[])e.Data.GetData(DataFormats.FileDrop));
+
+                if (imagens.Count > 30)
+                {
+                    MessageBox.Show("Por favor, selecione menos de 30 arquivos para um melhor desempenho");
+                    imagens.Clear();
+                    listBox1.Items.Clear();
+                }
+                else {
+
+                   listBox1.Items.Clear();
+                foreach (String s in imagens)
+                {
+                    Bitmap temp = new Bitmap(s);
+                    MakeGrayscale(temp).Save(s.Substring(0, s.Length - 4) + "PB.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
+                    temp.Dispose();
+                    newBitmap.Dispose();
+                    listBox1.Items.Add(s);
+                    
+                }
+                imagens.Clear();
+                listBox1.Items.Add("Pronto!!!");
+
+                }
+            }
+            catch{
+                MessageBox.Show("Um erro ocorreu, confira o que deu errado, e tente novamente");
+            }
+            
         }
 
 
@@ -45,7 +70,7 @@ namespace PB
         public static Bitmap MakeGrayscale(Bitmap original)
         {
             //create a blank bitmap the same size as original
-            Bitmap newBitmap = new Bitmap(original.Width, original.Height);
+            newBitmap = new Bitmap(original.Width, original.Height);
             newBitmap.SetResolution(300.0F, 300.0F);
             //get a graphics object from the new image
             Graphics g = Graphics.FromImage(newBitmap);
@@ -79,6 +104,18 @@ namespace PB
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
+
+        }
+
+        private void listBox1_DragDrop(object sender, DragEventArgs e)
+        {
+            
+        }
+
+        private void listBox1_DragLeave(object sender, EventArgs e)
+        {
+
+
 
         }
     }
